@@ -6,4 +6,6 @@ import kr.co.tj.memberservice.dto.MemberEntity;
 
 public interface MemberRepository extends JpaRepository<MemberEntity, String> {
 
+	MemberEntity findByUsername(String username);
+
 }
