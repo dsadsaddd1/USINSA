@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +31,55 @@ public class ReplyController {
 	@Autowired
 	private ReplyService replyService;
 	
+
+//	댓글 페이지네이션 코드
+//	@GetMapping("/bid")
+//	public ResponseEntity<?> listByBid(@RequestParam Long bid, @RequestParam int pageNum) {
+//	    Map<String, Object> map = new HashMap<>();
+//	    Page<ReplyDTO> page = replyService.findByBid(bid, pageNum);
+//	    map.put("result", page);
+//	    return ResponseEntity.ok().body(map);
+//	}
+	
+	@Autowired
+	private Environment env;
+
+	
+	@GetMapping("/health_check")
+	public String status() {
+		return "reply service입니다."+env.getProperty("local.server.port");
+	}
+
+	
+	
+	// 댓글 입력
+	@PostMapping("/insert")
+	public ResponseEntity<?> insert(@RequestBody ReplyRequest replyRequest){
+
+	Map<String, Object> map = new HashMap<>();
+	
+	if (replyRequest == null 
+			|| replyRequest.getUsername() == null 
+			|| replyRequest.getUsername().isEmpty()
+			|| replyRequest.getContent() == null
+			|| replyRequest.getContent().isEmpty()) {
+		map.put("result", "잘못된 접근입니다. replyDTO값이 존재하지 않습니다.");
+		return ResponseEntity.badRequest().body(map);
+	}
+		
+		
+	ReplyDTO replyDTO = ReplyDTO.toReplyDTO(replyRequest);
+	replyDTO = replyService.insert(replyDTO);
+	ReplyResponse replyResponse = replyDTO.toReplyResponse();
+	
+	return ResponseEntity.status(HttpStatus.CREATED).body(replyResponse);
+}
+	
+
+	// 댓글 id로 검색해서 불러오기
 	@GetMapping("/id/{id}")
 	public ResponseEntity<?> findById(@PathVariable("id") Long id){
+		
 		Map<String, Object> map = new HashMap<>();
 		
 		if ( id == null) {
@@ -40,9 +88,10 @@ public class ReplyController {
 		}
 		
 		try {
-			ReplyDTO dto = replyService.findById(id);
-			map.put("result", dto);
-			return ResponseEntity.ok().body(map);
+			ReplyDTO replyDTO = replyService.findById(id);
+			ReplyResponse replyResponse = replyDTO.toReplyResponse();
+
+			return ResponseEntity.status(HttpStatus.OK).body(replyResponse);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -51,8 +100,10 @@ public class ReplyController {
 		}
 	}
 	
+	// 특정 게시글(bid)에 있는 모든 댓글 불러오기
 	@GetMapping("/all/{bid}")
 	public ResponseEntity<?> findByBId(@PathVariable("bid") Long bid){
+		
 		Map<String, Object> map = new HashMap<>();
 		
 		if ( bid == null) {
@@ -60,43 +111,79 @@ public class ReplyController {
 			return ResponseEntity.badRequest().body(map);
 		}
 		
+		List<ReplyDTO> list = replyService.findByBId(bid);
+		map.put("result", list);
+		return ResponseEntity.ok().body(map);
+		
+	}
+	
+
+	// 특정 유저가 작성한 모든 댓글 불러오기
+	@GetMapping("/username/{username}")
+	public ResponseEntity<?> findByUsername(@PathVariable("username") String username){
+		Map<String, Object> map = new HashMap<>();
+		
+		if ( username == null) {
+			map.put("result", "없는 username입니다.");
+			return ResponseEntity.badRequest().body(map);
+		}
+		
 		try {
-			List<ReplyDTO> list = replyService.findByBId(bid);
-			map.put("result", list);
-			return ResponseEntity.ok().body(map);
+			List<ReplyDTO> list = replyService.findByUsername(username);
+			return ResponseEntity.status(HttpStatus.OK).body(list);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			map.put("err", e.getMessage());
 			return ResponseEntity.badRequest().body(map);
 		}
+		
 	}
 	
-	@GetMapping("/bid")
-	public ResponseEntity<?> listByBid(@RequestParam Long bid, @RequestParam int pageNum) {
-	    Map<String, Object> map = new HashMap<>();
-	    Page<ReplyDTO> page = replyService.findByBid(bid, pageNum);
-	    map.put("result", page);
-	    return ResponseEntity.ok().body(map);
+
+	// 댓글 수정하기
+	@PutMapping({"", "/"})
+	public ResponseEntity<?> update(@RequestBody ReplyRequest replyRequest){
+		
+		if (replyRequest == null 
+				|| replyRequest.getId() == null
+				|| replyRequest.getId() == 0L
+				|| replyRequest.getContent() == null
+				|| replyRequest.getContent().equals("")) {
+			return ResponseEntity.status(HttpStatus.OK).body("잘못된 접근입니다.1");
+		}
+
+		try {
+			ReplyDTO replyDTO = ReplyDTO.toReplyDTO(replyRequest);
+			replyDTO = replyService.update(replyDTO);
+			ReplyResponse replyResponse = replyDTO.toReplyResponse();
+			
+			return ResponseEntity.status(HttpStatus.OK).body(replyResponse);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.OK).body("잘못된 접근입니다.2");
+		}	
 	}
 	
 	
 	
-//	@PostMapping({"", "/"})
-//	public ResponseEntity<?> insert(@RequestBody ReplyDTO replyDTO){
+	// 댓글 삭제하기
+	@DeleteMapping({"", "/"})
+	public ResponseEntity<?> delete(@RequestBody ReplyRequest replyRequest){
 //		Map<String, Object> map = new HashMap<>();
 //		
-//		if (replyDTO == null 
-//				|| replyDTO.getUsername() == null 
-//				|| replyDTO.getUsername().equals("")
-//				|| replyDTO.getContent() == null
-//				|| replyDTO.getContent().equals("")) {
+//		Long id = replyDTO.getId();
+//		
+//		if (replyDTO == null
+//				|| id == null
+//				|| id == 0L) {
 //			map.put("result", "잘못된 접근입니다. replyDTO값이 존재하지 않습니다.");
 //			return ResponseEntity.badRequest().body(map);
 //		}
-//			
+//
 //		try {
-//			replyDTO = replyService.insert(replyDTO);
+//			replyService.delete(id);
 //			map.put("result", replyDTO);
 //			return ResponseEntity.ok().body(map);
 //		} catch (Exception e) {
@@ -104,86 +191,15 @@ public class ReplyController {
 //			e.printStackTrace();
 //			map.put("err", e.getMessage());
 //			return ResponseEntity.badRequest().body(map);
-//		}	
-//	}
-//	
-	
-	// 댓글 입력
-	@PostMapping("/insert")
-	public ResponseEntity<?> insert(@RequestBody ReplyRequest replyRequest){
+//		}
 
-	ReplyDTO replyDTO = ReplyDTO.toReplyDTO(replyRequest);
-	replyDTO = replyService.insert(replyDTO);
-	ReplyResponse replyResponse = replyDTO.toReplyResponse();
-	
-	return ResponseEntity.status(HttpStatus.CREATED).body(replyResponse);
-}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-		
-	@PutMapping({"", "/"})
-	public ResponseEntity<?> update(@RequestBody ReplyDTO replyDTO){
-		Map<String, Object> map = new HashMap<>();
-		
-		if (replyDTO == null 
-				|| replyDTO.getId() == null
-				|| replyDTO.getId() == 0L
-				|| replyDTO.getUsername() == null 
-				|| replyDTO.getUsername().equals("")
-				|| replyDTO.getContent() == null
-				|| replyDTO.getContent().equals("")) {
-			map.put("result", "잘못된 접근입니다. replyDTO값이 존재하지 않습니다.");
-			return ResponseEntity.badRequest().body(map);
-		}
-	
-		try {
-			replyDTO = replyService.update(replyDTO);
-			map.put("result", replyDTO);
-			return ResponseEntity.ok().body(map);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			map.put("err", e.getMessage());
-			return ResponseEntity.badRequest().body(map);
-		}
-	}
-	
-	@DeleteMapping({"", "/"})
-	public ResponseEntity<?> delete(@RequestBody ReplyDTO replyDTO){
-		Map<String, Object> map = new HashMap<>();
+		ReplyDTO replyDTO = ReplyDTO.toReplyDTO(replyRequest);
 		
 		Long id = replyDTO.getId();
 		
-		if (replyDTO == null
-				|| id == null
-				|| id == 0L) {
-			map.put("result", "잘못된 접근입니다. replyDTO값이 존재하지 않습니다.");
-			return ResponseEntity.badRequest().body(map);
-		}
-
-		try {
-			replyService.delete(id);
-			map.put("result", replyDTO);
-			return ResponseEntity.ok().body(map);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			map.put("err", e.getMessage());
-			return ResponseEntity.badRequest().body(map);
-		}
+		replyService.delete(id);
+		ReplyResponse replyResponse = replyDTO.toReplyResponse();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(replyResponse);
 	}
-
 }
