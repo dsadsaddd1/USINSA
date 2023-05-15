@@ -32,4 +32,40 @@ public class MemberDTO implements Serializable {
 	
 	private Date updateAt;
 
+	public static MemberDTO toMemberDTO(MemberRequest memberRequest) {
+		return MemberDTO.builder()
+				.username(memberRequest.getUsername())
+				.name(memberRequest.getName())
+				.password(memberRequest.getPassword())
+				.build();
+	}
+
+	public MemberResponse toMemberResponse() {
+		return MemberResponse.builder()
+				.username(username)
+				.name(name)
+				.createAt(createAt)
+				.updateAt(updateAt)
+				.build();
+	}
+
+	public MemberEntity toMemberEntity() {
+		return MemberEntity.builder()
+				.username(username)
+				.name(name)
+				.password(password)
+				.createAt(createAt)
+				.updateAt(updateAt)
+				.build();
+	}
+
+	public MemberDTO toMemberDTO(MemberEntity memberEntity) {
+		this.username = memberEntity.getUsername();
+		this.name = memberEntity.getName();
+		this.createAt = memberEntity.getCreateAt();
+		this.updateAt = memberEntity.getUpdateAt();
+		
+		return this;
+	}
+
 }

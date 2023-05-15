@@ -1,5 +1,6 @@
 package kr.co.tj.memberservice.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -21,7 +22,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Table(name = "members")
-public class MemberEntity {
+public class MemberEntity implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GenericGenerator(strategy = "uuid", name = "id-uuid")
