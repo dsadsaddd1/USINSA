@@ -52,9 +52,21 @@ public class ReplyDTO implements Serializable{
 	public static ReplyDTO toReplyDTO(ReplyRequest replyRequest) {
 		// TODO Auto-generated method stub
 		return ReplyDTO.builder()
+				.id(replyRequest.getId())
 				.username(replyRequest.getUsername())
 				.content(replyRequest.getContent())
 				.bid(replyRequest.getBid())
+				.build();
+	}
+
+	public ReplyResponse toReplyResponse() {
+		// TODO Auto-generated method stub
+		return ReplyResponse.builder()
+				.username(username)
+				.content(content)
+				.createDate(createDate)
+				.updateDate(updateDate)
+				.bid(bid)
 				.build();
 	}
 	
