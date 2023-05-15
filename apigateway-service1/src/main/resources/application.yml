@@ -34,4 +34,4 @@ eureka:
     register-with-eureka: true # 유레카 서버에 등록
     fetch-registry: true # 주기적으로 다른 인스턴스의 데이터를 받아와 갱싱
     service-url:
-      defaultZone: http://localhost:8888/eureka # 유레카 커서의 주소 정보 
+      defaultZone: http://localhost:8761/eureka # 유레카 커서의 주소 정보 
