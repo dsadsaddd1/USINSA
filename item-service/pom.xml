@@ -19,13 +19,26 @@
 	</properties>
 	<dependencies>
 		
+<<<<<<< HEAD
+=======
 	
 		
+>>>>>>> f63d22a65ba4fe3fc7ff3a586cf37797a5e3c3cf
 		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
 		<dependency>
 		    <groupId>mysql</groupId>
 		    <artifactId>mysql-connector-java</artifactId>
 		</dependency>
+<<<<<<< HEAD
+		
+		<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-openfeign -->
+		<dependency>
+		    <groupId>org.springframework.cloud</groupId>
+		    <artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+		
+=======
+>>>>>>> f63d22a65ba4fe3fc7ff3a586cf37797a5e3c3cf
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
