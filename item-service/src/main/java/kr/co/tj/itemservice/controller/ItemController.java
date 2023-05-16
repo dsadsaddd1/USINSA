@@ -1,6 +1,5 @@
 package kr.co.tj.itemservice.controller;
 
-<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,8 +48,9 @@ public class ItemController {
 	@GetMapping("/list/itemtype/{itemType}")
 	public ResponseEntity<?> findByItemType(@PathVariable("itemType") String itemType) {
 		
-			List<ItemDTO> list = itemService.findByItemType(itemType);
-			return ResponseEntity.status(HttpStatus.OK).body(list);
+		List<ItemDTO> list = itemService.findByItemType(itemType);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(list);
 		
 	}
 	
@@ -151,15 +151,4 @@ public class ItemController {
 		return "item 서비스";
 	}
 
-=======
-
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-@RequestMapping("item-service")
-public class ItemController {
-	
-	
->>>>>>> f63d22a65ba4fe3fc7ff3a586cf37797a5e3c3cf
 }

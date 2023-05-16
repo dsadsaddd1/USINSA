@@ -2,10 +2,6 @@ package kr.co.tj.itemservice.dto;
 
 import java.util.Date;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> f63d22a65ba4fe3fc7ff3a586cf37797a5e3c3cf
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +13,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ItemDTO {
 	
-<<<<<<< HEAD
 	private long id;
 	
 	private String itemName;
@@ -102,43 +97,10 @@ public class ItemDTO {
 	public static ItemDTO toItemDTO(ItemEntity entity) {
 
 		return ItemDTO.builder()
-=======
-	private long id;	
-	private String itemName;
-	private long price;
-	private int discount;
-	private int ea;
-	private String username;
-	private String itemDescribe;
-	private String itemType;
-	private Date createDate;
-	private Date updateDate;
-	
-	public ItemEntity toEntity(ItemDTO dto) {
-		ItemEntity entity = ItemEntity.builder()
-				.id(id)
-				.itemName(itemName)
-				.price(price)
-				.discount(discount)
-				.ea(ea)
-				.username(username)
-				.itemDescribe(itemDescribe)
-				.itemType(itemType)
-				.createDate(createDate)
-				.updateDate(updateDate)
-				.build();
-		
-		return entity;
-	}
-	
-	public static ItemDTO toDto(ItemEntity entity) {
-		ItemDTO dto = ItemDTO.builder()
->>>>>>> f63d22a65ba4fe3fc7ff3a586cf37797a5e3c3cf
 				.id(entity.getId())
 				.itemName(entity.getItemName())
 				.price(entity.getPrice())
 				.discount(entity.getDiscount())
-<<<<<<< HEAD
 				.username(entity.getUsername())
 				.ea(entity.getEa())
 				.itemDescribe(entity.getItemDescribe())
@@ -151,17 +113,4 @@ public class ItemDTO {
 
 	
 
-=======
-				.ea(entity.getEa())
-				.username(entity.getUsername())
-				.itemDescribe(entity.getItemDescribe())
-				.itemType(entity.getItemType())
-				.createDate(entity.getCreateDate())
-				.updateDate(entity.getUpdateDate())		
-				.build();
-		
-		return dto;
-	}
-
->>>>>>> f63d22a65ba4fe3fc7ff3a586cf37797a5e3c3cf
 }
