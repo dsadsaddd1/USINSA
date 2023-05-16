@@ -11,8 +11,8 @@ import kr.co.tj.itemservice.dto.ReplyResponse;
 @FeignClient(name = "reply-service")
 public interface ReplyFeign {
 	
-	@GetMapping("/relply-service/all/{bid}")
-	public List<ReplyResponse> findByBId(@PathVariable("bid") Long bid);
+	@GetMapping("/reply-service/all/{bid}")
+	public List<ReplyResponse> getReplysByBid(@PathVariable("bid") Long bid);
 		
 
 }

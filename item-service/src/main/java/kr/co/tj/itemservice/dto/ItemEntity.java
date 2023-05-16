@@ -27,21 +27,21 @@ public class ItemEntity implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 	
 	@Column(nullable = false)
 	private String itemName;
 	
 	@Column(nullable = false)
-	private int price;
+	private Long price;
 	
-	private int discount;
+	private Long discount;
 	
 	@Column(nullable = false)
 	private String username;
 	
 	@Column(nullable = false)
-	private int ea;
+	private Long ea;
 	
 	@Column(nullable = false)
 	private String itemDescribe;

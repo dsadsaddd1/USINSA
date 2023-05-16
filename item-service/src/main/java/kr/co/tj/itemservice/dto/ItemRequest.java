@@ -5,17 +5,17 @@ import lombok.Data;
 @Data
 public class ItemRequest {
 
-	private long id;
+	private Long id;
 
 	private String itemName;
 	
-	private int price;
+	private Long price;
 	
-	private int discount;
+	private Long discount;
 	
 	private String username;
 	
-	private int ea;
+	private Long ea;
 	
 	private String itemDescribe;
 	

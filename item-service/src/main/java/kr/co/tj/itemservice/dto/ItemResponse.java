@@ -2,6 +2,7 @@ package kr.co.tj.itemservice.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,25 +17,27 @@ public class ItemResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	private long id;
+	private Long id;
 	
 	private String itemName;
 	
-	private int price;
+	private Long price;
 	
-	private int discount;
+	private Long discount;
 	
-	private int salePrice;
+	private Long salePrice;
 	
-	private int totalPrice;
+	private Long totalPrice;
 	
 	private String username;
 	
-	private int ea;
+	private Long ea;
 	
 	private String itemDescribe;
 	
 	private String itemType;
+	
+	private List<ReplyResponse> replyList;
 	
 	private Date createDate;
 	private Date updateDate;

@@ -1,9 +1,6 @@
 package kr.co.tj.itemservice.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,12 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import kr.co.tj.itemservice.dto.ItemDTO;
+import kr.co.tj.itemservice.dto.ItemEntity;
 import kr.co.tj.itemservice.dto.ItemRequest;
 import kr.co.tj.itemservice.dto.ItemResponse;
+import kr.co.tj.itemservice.dto.OrderResponse;
 import kr.co.tj.itemservice.service.ItemService;
 
 @RestController
@@ -30,8 +28,63 @@ public class ItemController {
 	@Autowired
 	private ItemService itemService;
 	
+	@PutMapping("/item/productid")
+	public ResponseEntity<?> updateStockByProductId(@RequestBody OrderResponse orderResponse) {
+
+		ItemDTO itemDTO = itemService.findById(orderResponse.getProductId());
+		// ItemEntity itemEntity = itemService.findById(orderResponse.getProductId());
+		ItemEntity itemEntity = ItemDTO.toItemEntity(itemDTO);
+
+		if (itemEntity == null) {
+			return ResponseEntity.status(HttpStatus.OK).body("0: 존재하지 않는 상품");
+		}
+
+		if (itemEntity.getEa() < orderResponse.getQty()) {
+			return ResponseEntity.status(HttpStatus.OK).body("0: 재고가 부족합니다.");
+		}
+
+		itemEntity.setEa(itemEntity.getEa() - orderResponse.getQty());
+
+		String result;
+
+		try {
+			result = itemService.updateEaByProductId(itemEntity);
+			if (result.equalsIgnoreCase("ok")) {
+				return ResponseEntity.status(HttpStatus.OK).body("1: 성공");
+			} else {
+				return ResponseEntity.status(HttpStatus.OK).body("0: 재고 갱신 실패");
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.OK).body("0: 재고 갱신 실패");
+		}
+
+	}
+	
+	@GetMapping("/item/id/{id}/replys")
+	public ResponseEntity<?> getReplys(@PathVariable() Long id){
+		
+		if(id == null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 정보");
+		}
+		
+		ItemDTO dto = itemService.getReplys(id);
+		
+		ItemResponse itemResponse = dto.toItemResponse();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(itemResponse);
+	}
+	
+	
 	@DeleteMapping("")
 	public ResponseEntity<?> delete(@RequestBody ItemRequest itemRequest) {
+		
+		if(itemRequest == null
+				|| itemRequest.getId() == null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 정보");
+		}
 		
 		ItemDTO itemDTO = ItemDTO.toItemDTO(itemRequest);
 
@@ -48,6 +101,10 @@ public class ItemController {
 	@GetMapping("/list/itemtype/{itemType}")
 	public ResponseEntity<?> findByItemType(@PathVariable("itemType") String itemType) {
 		
+		if(itemType == null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 정보");
+		}
+		
 		List<ItemDTO> list = itemService.findByItemType(itemType);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(list);
@@ -57,8 +114,13 @@ public class ItemController {
 	@PutMapping("/item/update")
 	public ResponseEntity<?> update(@RequestBody ItemRequest itemRequest){
 		
-		if (itemRequest == null || itemRequest.getItemName() == null || itemRequest.getPrice() == 0 || itemRequest.getEa() == 0
-				|| itemRequest.getItemDescribe() == null || itemRequest.getItemDescribe() == "" || itemRequest.getItemType() == null
+		if (itemRequest == null 
+				|| itemRequest.getItemName() == null 
+				|| itemRequest.getPrice() == 0 
+				|| itemRequest.getEa() == 0
+				|| itemRequest.getItemDescribe() == null 
+				|| itemRequest.getItemDescribe() == "" 
+				|| itemRequest.getItemType() == null
 				|| itemRequest.getItemType() == "") {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 정보");
 		}
@@ -87,6 +149,11 @@ public class ItemController {
 	
 	@GetMapping("/item/username/{username}")
 	public ResponseEntity<?> findByUsername(@PathVariable() String username){
+		
+		if(username == null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 정보");
+		}
+		
 		List<ItemDTO> list = itemService.findByUsername(username);
 		
 //		List<ItemResponse> responsesList = new ArrayList<>();
@@ -105,35 +172,18 @@ public class ItemController {
 	@PostMapping("/items")
 	public ResponseEntity<?> createItem(@RequestBody ItemRequest itemRequest) {
 
-		if (itemRequest.getItemName() == null) {
+		if (itemRequest.getItemName() == null
+				|| itemRequest.getPrice() == 0
+				|| itemRequest.getDiscount() == 0
+				|| itemRequest.getUsername() == null
+				|| itemRequest.getUsername().equals("")
+				|| itemRequest.getEa() <= 0
+				|| itemRequest.getItemDescribe() == null
+				|| itemRequest.getItemDescribe().equals("")
+				|| itemRequest.getItemType() == null
+				|| itemRequest.getItemType().equals("")
+				) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("상품 입력 실패1");
-		}
-		if(itemRequest.getPrice() == 0) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("상품 입력 실패2");
-		}
-		if(itemRequest.getDiscount() == 0) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("상품 입력 실패3");
-		}
-		if(itemRequest.getUsername() == null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("상품 입력 실패4");
-		} 
-		if(itemRequest.getUsername().equals("")) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("상품 입력 실패5");
-		}
-		if(itemRequest.getEa() <= 0) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("상품 입력 실패6");
-		}
-		if(itemRequest.getItemDescribe() == null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("상품 입력 실패7");
-		}
-		if(itemRequest.getItemDescribe().equals("")) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("상품 입력 실패8");
-		} 
-		if(itemRequest.getItemType() == null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("상품 입력 실패9");
-		}
-		if(itemRequest.getItemType().equals("")) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("상품 입력 실패10");
 		}
 		
 		ItemDTO itemDTO = ItemDTO.toItemDTO(itemRequest);

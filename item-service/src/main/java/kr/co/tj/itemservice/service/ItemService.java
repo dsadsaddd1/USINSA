@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import kr.co.tj.itemservice.dto.ItemDTO;
 import kr.co.tj.itemservice.dto.ItemEntity;
 import kr.co.tj.itemservice.dto.ItemResponse;
+import kr.co.tj.itemservice.dto.ReplyResponse;
+import kr.co.tj.itemservice.feign.ReplyFeign;
 import kr.co.tj.itemservice.repository.ItemRepository;
 
 @Service
@@ -21,6 +23,23 @@ public class ItemService {
 	
 	@Autowired
 	private ItemRepository itemRepository;
+	
+	@Autowired
+	private ReplyFeign replyFeign;
+	
+	@Transactional
+	public String updateEaByProductId(ItemEntity itemEntity) {
+		// TODO Auto-generated method stub
+
+		try {
+			itemRepository.save(itemEntity);
+			return "ok";
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "fail";
+		}
+	}
 
 	public ItemDTO createItem(ItemDTO itemDTO) {
 		
@@ -128,6 +147,29 @@ public class ItemService {
 	@Transactional
 	public void deleteItem(Long id) {
 		itemRepository.deleteById(id);
+	}
+
+	public ItemDTO getReplys(Long id) {
+		
+		Optional<ItemEntity> optional = itemRepository.findById(id);
+		
+		if(!optional.isPresent()) {
+			throw new RuntimeException("안돼");
+		}
+		
+		ItemEntity itemEntity= optional.get();
+		
+		//ItemEntity itemEntity = itemRepository.findById(id);
+		
+		
+		ItemDTO itemDTO = new ItemDTO();
+		itemDTO = ItemDTO.toItemDTO(itemEntity);
+		
+		List<ReplyResponse> replyList = replyFeign.getReplysByBid(id);
+		
+		itemDTO.setReplyList(replyList);
+		
+		return itemDTO;
 	}
 
 }

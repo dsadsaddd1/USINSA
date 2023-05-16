@@ -1,6 +1,8 @@
 package kr.co.tj.itemservice.dto;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,25 +15,27 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ItemDTO {
 	
-	private long id;
+	private Long id;
 	
 	private String itemName;
 	
-	private int price;
+	private Long price;
 	
-	private int discount;
+	private Long discount;
 	
-	private int salePrice;
+	private Long salePrice;
 	
-	private int totalPrice;
+	private Long totalPrice;
 	
 	private String username;
 	
-	private int ea;
+	private Long ea;
 	
 	private String itemDescribe;
 	
 	private String itemType;
+	
+	private List<ReplyResponse> replyList;
 	
 	private Date createDate;
 	private Date updateDate;
@@ -88,6 +92,7 @@ public class ItemDTO {
 				.itemType(itemType)
 				.createDate(createDate)
 				.updateDate(updateDate)
+				.replyList(replyList)
 				.build();
 	}
 
@@ -111,6 +116,23 @@ public class ItemDTO {
 	}
 
 
-	
+
+
+	public static ItemEntity toItemEntity(ItemDTO itemDTO) {
+		// TODO Auto-generated method stub
+		return ItemEntity.builder()
+	            .id(itemDTO.getId())
+	            .itemName(itemDTO.getItemName())
+	            .price(itemDTO.getPrice())
+	            .discount(itemDTO.getDiscount())
+	            .username(itemDTO.getUsername())
+	            .ea(itemDTO.getEa())
+	            .itemDescribe(itemDTO.getItemDescribe())
+	            .itemType(itemDTO.getItemType())
+	            .createDate(itemDTO.getCreateDate())
+	            .updateDate(itemDTO.getUpdateDate())
+	            .build();
+
+	}
 
 }
