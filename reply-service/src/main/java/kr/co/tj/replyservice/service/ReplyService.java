@@ -69,24 +69,12 @@ public class ReplyService {
 	}
 
 
-//	public ReplyDTO findById(Long id) {
-//	Optional<ReplyEntity> optional = replyRepository.findById(id);
-//	
-//	if(!optional.isPresent()) {
-//		throw new RuntimeException("잘못된 접근입니다. 댓글 id가 존재하지 않습니다.");
-//	}
-//	
-//	ReplyEntity replyEntity = optional.get();
-//	
-//	return ReplyDTO.toReplyDTO(replyEntity);
-//}
-	
 
 	public ReplyDTO findById(Long id) {
 		Optional<ReplyEntity> optional = replyRepository.findById(id);
 		
 		if(!optional.isPresent()) {
-			throw new RuntimeException("잘못된 접근입니다. 댓글 id가 존재하지 않습니다.");
+			throw new RuntimeException("잘못된 접근입니다. 댓글이 존재하지 않습니다.");
 		}
 		
 		ReplyEntity replyEntity = optional.get();
@@ -95,17 +83,16 @@ public class ReplyService {
 	}
 
 
-//	public List<ReplyDTO> findByBId(Long bid) {
-//	
-
-//		
-//	}	
-	
 
 	public List<ReplyDTO> findByBId(Long bid) {
 		// TODO Auto-generated method stub
 		List<ReplyEntity> list_entity = replyRepository.findByBid(bid);
 		List<ReplyDTO> list_dto = new ArrayList<>();
+		
+		if(list_entity.isEmpty()) {
+			throw new RuntimeException("잘못된 접근입니다. 게시글이 존재하지 않습니다.");
+		}
+		
 		
 		for (ReplyEntity e: list_entity) {
 			list_dto.add(ReplyDTO.toReplyDTO(e));
@@ -121,6 +108,10 @@ public class ReplyService {
 		List<ReplyEntity> list_entity = replyRepository.findByUsername(username);
 		List<ReplyDTO> list_dto = new ArrayList<>();
 		
+		if(list_entity.isEmpty()) {
+			throw new RuntimeException("잘못된 접근입니다. 유저가 존재하지 않습니다.");
+		}
+		
 		for (ReplyEntity e: list_entity) {
 			list_dto.add(ReplyDTO.toReplyDTO(e));
 		}
@@ -135,10 +126,14 @@ public class ReplyService {
 		Optional<ReplyEntity> optional = replyRepository.findById(replyDTO.getId());
 		
 		if(!optional.isPresent()) {
-			throw new RuntimeException("잘못된 접근입니다. 댓글 id가 존재하지 않습니다.");
+			throw new RuntimeException("잘못된 접근입니다. 댓글이 존재하지 않습니다.");
 		}
 		
 		ReplyEntity replyEntity = optional.get();
+		
+		if(!replyEntity.getUsername().equals(replyDTO.getUsername())) {
+			throw new RuntimeException("잘못된 접근입니다. 댓글 작성자가 일치하지 않습니다.");
+		}
 		
 		replyEntity.setContent(replyDTO.getContent());
 		Date date = new Date();
@@ -151,6 +146,11 @@ public class ReplyService {
 
 	public void delete(Long id) {
 		// TODO Auto-generated method stub
+		
+		if(id == null) {
+			throw new RuntimeException("잘못된 접근입니다. 댓글이 존재하지 않습니다.");
+		}
+		
 		replyRepository.deleteById(id);
 	}
 	
